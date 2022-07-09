@@ -44,6 +44,25 @@ Kritériumok az adatbázissal kapcsolatban:
     - az adatbázis, a táblák és a mezők elnevezése rajtad áll, azonban használj angol megnevezéseket, méghozzá következetesen
       (ha az egyik táblában camel-case szerinti mező-neveket adtál, akkor a másik táblában is tégy úgy)
 
+Megoldás_1:CREATE TABLE modulzaro1
+            (id INT NOT NULL AUTO_INCREMENT ,
+           name VARCHAR(150) NOT NULL ,
+           email VARCHAR(150) NOT NULL ,
+            password VARCHAR(150) NOT NULL ,
+            is_active BOOLEAN NOT NULL ,
+            registration DATE NOT NULL ,
+            PRIMARY KEY (id),
+           UNIQUE (email)) ENGINE = InnoDB;
+
+Megoldás_2:CREATE TABLE modulzaro2
+(sender INT NOT NULL , reciever INT NOT NULL ,
+ message TEXT NOT NULL , message_date DATETIME NOT NULL ,
+ messageID INT NOT NULL AUTO_INCREMENT , PRIMARY KEY (messageID),
+ INDEX (reciever), INDEX (sender)) ENGINE = InnoDB;
+
+
+
+
 */
 
 
@@ -54,5 +73,12 @@ Bónusz feladat (5 pont)
 
 Adj hozzá adatokat mindegyik táblához!
 (Az adatoknak nem kell valósnak lenniük. Egy felhasználói email-cím lehet például: 'valami@valami.va')
+
+
+INSERT INTO barni(name, email, password, is_active, registration)
+           VALUES ('Barni','barni@bucsek.com','jelszo','1','2022.07.09.')
+
+           INSERT INTO leonidas(sender, reciever, message)
+           VALUES ('1','2','Szia uram, van egy szál cigid? Buszjegyre kéne.')
 
 */

@@ -30,6 +30,9 @@ Jó munkát!
     Melyik évben nyerte el egy ország legkorábban a függetlenségét?
     Írj lekérdezést, amely visszaadja azt az évszámot, amikor az első ország független lett! (IndepYear)
 
+    Megoldás:WHERE IndepYear =
+                  (SELECT MIN(IndepYear)
+                  FROM country);
     Elvárt eredmény:
         -1523
 */
@@ -42,6 +45,7 @@ Jó munkát!
     A feladatot egy lekérdezésben oldd meg! Azaz nem elfogadható, ha először lekérdezed a legkorábbi függetlenség évszámát,
     azt kimásolod, és beilleszted a lekérdezésbe.
 
+    Megoldás:SELECT * FROM country WHERE IndepYear = (SELECT MIN(IndepYear) FROM country);
     Elvárt eredmény:
         CHN Code-ú ország (China)
 */
@@ -52,6 +56,7 @@ Jó munkát!
     Melyek azok a városok, amelyeknél a város neve ugyanaz, mint a körzeté?
     Írj lekérdezést, amely visszaadja a városok összes adatát, amelyeknél a név megegyezik a körzet nevével! (District)
 
+    Megoldás:SELECT * FROM city WHERE Name LIKE District;
     Elvárt eredmény:
         550 rekord
         ID szerint növekvő sorrendben az első 5 darab: 2, 3, 8, 11, 34
@@ -65,6 +70,9 @@ Jó munkát!
     Írj lekérdezést, amely visszaadja az ország nevét és az államfő nevét, amennyiben az államfő neve tartalmazza
     a fent leírt szavak bármelyikét! (HeadOfState)
 
+    Megoldás:SELECT Name, HeadOfState FROM country
+                     WHERE HeadOfState LIKE '%Ahmad%'
+                     OR HeadOfState LIKE '%Ahmed%' OR HeadOfState LIKE '%Hamad%';
     Elvárt eredmény:
         7 rekord
         országnevek: Bangladesh, Bahrain, Kuwait, Mauritania, Qatar, Sudan, Sierra Leone
@@ -77,6 +85,7 @@ Jó munkát!
     Írj lekérdezést, amely visszaadja azoknak az országoknak az összes adatát, ahol nem szerepel várható életkor (LifeExpectancy),
     de nem lakatlanok.
 
+    Megoldás:SELECT * FROM country WHERE LifeExpectancy IS NULL AND Population > 0
     Elvárt eredmény:
         10 rekord
         kontinensek: Oceania (7 db), Europe (2), South America (1)
@@ -89,6 +98,7 @@ Jó munkát!
     Írj lekérdezést, amely visszaadja az ország kódját, nevét, a GNP-t és a GNPOld-ot azokról az országokról,
     ahol a GNPOld nagyobb, mint a GNP!
 
+    Megoldás:
     Elvárt eredmény:
         63 rekord
 */
@@ -100,6 +110,7 @@ Jó munkát!
     Írj lekérdezést, amely visszaadja a nyelvek nevét, ahol a név 'ian'-ra végződik!
     Mindegyik nyelv csak egyszer szerepeljen a találatok között, és rendezd őket név szerint ABC-sorrendbe!
 
+    Megoldás:SELECT * FROM countrylanguage WHERE Language LIKE '%ian' GROUP BY Language ORDER by Language;
     Elvárt eredmény:
         29 rekord
 */
@@ -111,6 +122,7 @@ Jó munkát!
     Írj lekérdezést, amely visszaadja a régiót és a régióban található országok darabszámát,
     ahol a régióban szerepel az, hogy 'Europe'!
 
+    Megoldás:SELECT Region, COUNT(country.Region) FROM country WHERE Region LIKE '%Europe%' GROUP BY Region;
     Elvárt eredmény:
         Southern Europe: 15
         Western Europe: 9
@@ -125,6 +137,10 @@ Jó munkát!
     méghozzá az ország neve szerint ABC-sorrendben!
     A találati listában minden ország szerepeljen - még akkor is, ha nincsen fővárosa.
 
+    Megoldás:SELECT Code,country.Name, city.Name
+                    FROM country
+                    LEFT JOIN city ON country.Capital = city.ID
+                    ORDER BY country.Name ASC;
     Elvárt eredmény:
         239 rekord
         első országkód: AFG
@@ -137,6 +153,7 @@ Jó munkát!
     Melyek azok a városok, amelyeknél a populáció száma pontosan 3 számjegyből áll?
     Írj lekérdezést, amely visszaadja azoknak a városoknak az összes adatát, amelyeknél a lakosság száma pontosan 3 számjegyből áll!
 
+    Megoldás:SELECT * FROM city WHERE Population LIKE '___';
     Elvárt eredmény:
         10 rekord
         a városok ID-ja: 61, 62, 1791, 2316, 2317, 2728, 2805, 2806, 3333, 3538
@@ -150,6 +167,9 @@ Jó munkát!
     amelyek valamilyen 'Nordic Countries' régióhoz tartozó országban vannak,
     méghozzá országkód szerint ABC-sorrendben (növekvő), populáció szerint csökkenő sorrendben!
 
+    Megoldás:SELECT city.ID,city.Name,city.CountryCode,city.District,city.Population
+    FROM city INNER JOIN country ON city.CountryCode = country.Code WHERE country.Region
+    LIKE '%Nordic Countries%' ORDER BY city.CountryCode, city.Population DESC;
     Elvárt eredmény:
         35 rekord
         országkódok, amelyek szerepelnek a listában: DNK, FIN, FRO, ISL, NOR, SJM, SWE
@@ -164,6 +184,10 @@ Jó munkát!
     hogy nincs érték megadva az `IndepYear`-nél, vagy 1500 előtt nyerték el a függetlenségüket!
     A találatokat rendezd a darabszám szerint csökkenő sorrendbe!
 
+    Megoldás:SELECT Region,COUNT(Region) AS orszagok szama
+             FROM country WHERE IndepYear IS NULL OR IndepYear < 1500
+             GROUP BY Region
+             ORDER BY COUNT(Region) DESC;
     Elvárt eredmény:
         19 rekord
         legkisebb: Northern Africa (1)
@@ -176,6 +200,9 @@ Jó munkát!
     Melyek azok az országok, amelyekben nem hivatalos nyelvként beszélik az angolt?
     Írj lekérdezést, amely visszaadja az országok összes adatát, amelyekben az angol nem hivatalos nyelv!
 
+    Megoldás:SELECT country.* FROM country INNER JOIN countrylanguage ON
+    country.Code = countrylanguage.CountryCode WHERE countrylanguage.IsOfficial
+    = 'F' AND Language = 'English';
     Elvárt eredmény:
         16 rekord
         országkódok: ABW, ANT, BHR, BRN, COK, DNK, ISL, JPN, KWT, MAC, MCO, MDV, MYS, NOR, PRI, TTO
@@ -187,6 +214,11 @@ Jó munkát!
     Mely országokhoz nem tartozik egy város sem?
     Írj lekérdezést, amely visszaadja azoknak az országoknak az összes adatát, amelyekhez nem tartozik város az adatbázisban!
 
+    Megoldás:SELECT *
+             FROM country
+             LEFT JOIN city
+             ON city.CountryCode = country.Code
+             WHERE city.Name IS NULL;
     Elvárt eredmény:
         7 rekord
         országkódok: ATA, ATF, BVT, HMD, IOT, SGS, UMI
@@ -199,6 +231,11 @@ Jó munkát!
     Írj lekérdezést, amely visszaadja az ország nevét, kontinensét, régióját, a nyelv nevét és százalékát, amelyre igaz,
     hogy a nyelv százaléka 0!
 
+    Megoldás:SELECT country.Name, country.Continent,country.Region,countrylanguage.Language, (Percentage) AS Percentage
+             FROM countrylanguage
+             INNER JOIN country
+             ON countrylanguage.CountryCode = country.Code
+             WHERE Percentage = 0;
     Elvárt eredmény:
         65 rekord
 */
